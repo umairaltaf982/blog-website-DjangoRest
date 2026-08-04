@@ -1,5 +1,7 @@
 # Software Requirements Specification (SRS)
 
+# Blog Website
+
 ## 1. Introduction
 
 This project is a backend-only blog application developed using **Django REST Framework (DRF)**. It provides REST APIs for blog management, user authentication, and blog reactions (likes/dislikes).
