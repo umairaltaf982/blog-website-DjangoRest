@@ -50,14 +50,14 @@ class BlogReactionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"reaction": "Reaction must be either 'L' (Like) or 'D' (Dislike)."})
         return attrs
 
-    def create(self, validated_data):
+    def create(self, validated_data):  # This method is automatically called when you do: serializer.save()
         """
         Handles reaction creation OR updating if the user changes their vote 
         (e.g., changing from Like to Dislike).
         """
-        user = self.context['request'].user
-        blog = validated_data['blog']
-        reaction_choice = validated_data['reaction']
+        user = self.context['request'].user  # Gets the currently logged-in user from the request. No need for the client to send the user ID.
+        blog = validated_data['blog']                   # Retrieves the blog the user is reacting to.
+        reaction_choice = validated_data['reaction']    # Retrieves whether the reaction is "Like" or "Dislike".
 
         # update_or_create prevents database duplicate errors and allows changing votes
         reaction_obj, created = BlogReaction.objects.update_or_create(
