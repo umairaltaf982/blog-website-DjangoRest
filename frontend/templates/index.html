@@ -1,0 +1,188 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog</title>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════ NAVBAR ═══════════════════════════ -->
+  <header class="navbar">
+    <a href="#" class="nav-brand" data-page="home">✍️ BlogSpace</a>
+    <nav class="nav-links">
+      <a href="#" data-page="home">Home</a>
+      <span id="nav-admin-link" class="hidden"><a href="#" data-page="admin">Admin Panel</a></span>
+      <span id="nav-auth">
+        <a href="#" data-page="login" id="nav-login-btn">Login</a>
+      </span>
+      <button id="nav-logout-btn" class="btn btn-outline hidden">Logout</button>
+    </nav>
+  </header>
+
+  <!-- ═══════════════════════════ TOAST ════════════════════════════ -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- ═════════════════════════ PAGE: HOME ═════════════════════════ -->
+  <main id="page-home" class="page active">
+    <div class="container">
+      <div class="page-header">
+        <h1>Latest Posts</h1>
+        <p class="subtitle">Thoughts, stories and ideas</p>
+      </div>
+
+      <div id="blogs-grid" class="blogs-grid">
+        <!-- Blog cards injected here -->
+      </div>
+
+      <div id="home-empty" class="empty-state hidden">
+        <div class="empty-icon">📝</div>
+        <h3>No posts yet</h3>
+        <p>Check back soon for new content.</p>
+      </div>
+
+      <div id="home-loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading posts…</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ══════════════════════ PAGE: BLOG DETAIL ══════════════════════ -->
+  <main id="page-detail" class="page hidden">
+    <div class="container container--narrow">
+      <button class="btn btn-ghost back-btn" data-page="home">← Back to posts</button>
+
+      <article id="detail-article">
+        <header class="detail-header">
+          <h1 id="detail-title"></h1>
+          <div class="detail-meta">
+            <span id="detail-author" class="author-badge"></span>
+            <span id="detail-date" class="date-text"></span>
+          </div>
+        </header>
+
+        <div id="detail-content" class="detail-content"></div>
+
+        <!-- Reaction bar -->
+        <div class="reaction-bar">
+          <button id="btn-like" class="reaction-btn" data-reaction="L">
+            <span class="reaction-icon">👍</span>
+            <span id="likes-count">0</span>
+          </button>
+          <button id="btn-dislike" class="reaction-btn" data-reaction="D">
+            <span class="reaction-icon">👎</span>
+            <span id="dislikes-count">0</span>
+          </button>
+          <span id="reaction-hint" class="reaction-hint"></span>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <!-- ═══════════════════════ PAGE: LOGIN ═══════════════════════════ -->
+  <main id="page-login" class="page hidden">
+    <div class="container container--xs">
+      <div class="auth-card">
+        <div class="auth-header">
+          <div class="auth-icon">🔐</div>
+          <h2>Welcome back</h2>
+          <p>Sign in to your account</p>
+        </div>
+
+        <form id="login-form" novalidate>
+          <div class="form-group">
+            <label for="login-username">Username</label>
+            <input type="text" id="login-username" placeholder="Enter username" required />
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <div class="password-wrap">
+              <input type="password" id="login-password" placeholder="Enter password" required />
+              <button type="button" class="toggle-pw" id="toggle-pw">👁</button>
+            </div>
+          </div>
+          <div id="login-error" class="form-error hidden"></div>
+          <button type="submit" class="btn btn-primary btn-full" id="login-submit-btn">
+            Sign in
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════════════════════ PAGE: ADMIN ═══════════════════════════ -->
+  <main id="page-admin" class="page hidden">
+    <div class="container">
+      <div class="page-header admin-page-header">
+        <div>
+          <h1>Admin Panel</h1>
+          <p class="subtitle">Manage your blog posts</p>
+        </div>
+        <button class="btn btn-primary" id="open-create-modal">+ New Post</button>
+      </div>
+
+      <div id="admin-blogs-list" class="admin-table-wrap">
+        <!-- Admin rows injected here -->
+      </div>
+
+      <div id="admin-loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading posts…</p>
+      </div>
+
+      <div id="admin-empty" class="empty-state hidden">
+        <div class="empty-icon">📄</div>
+        <h3>No posts yet</h3>
+        <p>Create your first post using the button above.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════════════════ MODAL: CREATE / EDIT POST ═══════════════════ -->
+  <div id="post-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-title">New Post</h2>
+        <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+      </div>
+      <form id="post-form" novalidate>
+        <input type="hidden" id="post-id" value="" />
+        <div class="form-group">
+          <label for="post-title">Title <span class="required">*</span></label>
+          <input type="text" id="post-title" placeholder="Enter post title" maxlength="50" required />
+          <span class="char-count" id="title-char-count">0 / 50</span>
+        </div>
+        <div class="form-group">
+          <label for="post-content">Content <span class="required">*</span></label>
+          <textarea id="post-content" rows="10" placeholder="Write your post content here…" required></textarea>
+        </div>
+        <div id="post-form-error" class="form-error hidden"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="post-submit-btn">Publish</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ MODAL: DELETE CONFIRM ═══════════════════════ -->
+  <div id="delete-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal modal--sm">
+      <div class="modal-header">
+        <h2>Delete Post</h2>
+        <button class="modal-close" id="delete-modal-close" aria-label="Close">✕</button>
+      </div>
+      <p class="delete-msg">Are you sure you want to delete <strong id="delete-blog-title"></strong>? This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="delete-cancel">Cancel</button>
+        <button class="btn btn-danger" id="delete-confirm">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>
