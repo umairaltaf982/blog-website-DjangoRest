@@ -13,8 +13,14 @@ class UserSerializer(serializers.ModelSerializer):
 class BlogSerializer(serializers.ModelSerializer):
     """Serializer for Blog management and public viewing (Req 2.2, 2.3, 2.5)."""
     author = UserSerializer(read_only=True)
-    likes_count = serializers.IntegerField(read_only=True)
-    dislikes_count = serializers.IntegerField(read_only=True)
+    likes_count = serializers.SerializerMethodField()
+    dislikes_count = serializers.SerializerMethodField()
+
+    def get_likes_count(self, obj):
+        return obj.likes_count
+
+    def get_dislikes_count(self, obj):
+        return obj.dislikes_count
 
     class Meta:
         model = Blog

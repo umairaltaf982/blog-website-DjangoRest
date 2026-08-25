@@ -14,11 +14,11 @@ class Blog(models.Model):
     # Helper properties for DRF Serializers (Req 2.3 & 2.4)
     @property
     def likes_count(self):
-        return self.blogreaction_set.filter(reaction='L').count()
+        return self.reactions.filter(reaction='L').count()
 
     @property
     def dislikes_count(self):
-        return self.blogreaction_set.filter(reaction='D').count()
+        return self.reactions.filter(reaction='D').count()
 
 
 class BlogReaction(models.Model):
